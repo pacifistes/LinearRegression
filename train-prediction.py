@@ -52,13 +52,13 @@ def iterateTraining(theta0, theta1, dataList):
 	learningRate = 0.01
 	dataSize = len(dataList)
 	errorSum = 0
-	errorMultipliedByPriceSum = 0
+	errorMultipliedByMileageSum = 0
 	for i in range(0, dataSize):
 		error = estimatePrice(dataList[i][0], theta0, theta1) - dataList[i][1]
 		errorSum += error
-		errorMultipliedByPriceSum += (error * dataList[i][0])
+		errorMultipliedByMileageSum += (error * dataList[i][0])
 	newTheta0 = theta0 - (learningRate * (1 / dataSize)) * errorSum
-	newTheta1 = theta1 - (learningRate * (1 / dataSize)) * errorMultipliedByPriceSum
+	newTheta1 = theta1 - (learningRate * (1 / dataSize)) * errorMultipliedByMileageSum
 	print 'theta0 = {} ; theta1 = {}'.format(newTheta0, newTheta1)
 	return [newTheta0, newTheta1]
 
@@ -69,13 +69,13 @@ if len(sys.argv) == 2:
 		try:
 			theta0 = 0
 			theta1 = 0
-			for iteration in range(0,20):
+			for iteration in range(0,100):
 				theta0, theta1 = iterateTraining(theta0, theta1, dataList)
-			writeThetaFile(theta0, theta1)
-			dataSize = len(dataList)
-			line = []
-			line.append([dataList[0][0], dataList[dataSize-1][0]])
-			line.append([estimatePrice(dataList[0][0], theta0, theta1), estimatePrice(dataList[dataSize-1][0], theta0, theta1)])
+			# writeThetaFile(theta0, theta1)
+			# dataSize = len(dataList)
+			# line = []
+			# line.append([dataList[0][0], dataList[dataSize-1][0]])
+			# line.append([estimatePrice(dataList[0][0], theta0, theta1), estimatePrice(dataList[dataSize-1][0], theta0, theta1)])
 			# displayUI(mileageList, priceList, line)
 		except Exception:
 			print 'Error in the file'

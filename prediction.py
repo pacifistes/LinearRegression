@@ -33,6 +33,9 @@ if len(sys.argv) == 2:
 		print 'Error script : python prediction.py mileage.'
 		sys.exit(1)
 	thetaList = readThetaFile();
-	print 'price of the car with {}km : {}.'.format(mileage, thetaList[0] + (thetaList[1] * mileage))
+	result = thetaList[0] + (thetaList[1] * mileage)
+	if result < 0:
+		result = 0
+	print 'price of the car with {}km : {}.'.format(mileage, result
 else:
 	print 'Error script : python prediction.py mileage.'
