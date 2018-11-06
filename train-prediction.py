@@ -1,45 +1,11 @@
 #!/usr/bin/python
 from __future__ import division
+from utils import *
 import sys
-import csv
-# import matplotlib.pyplot as plt
-# import numpy as np
+import matplotlib.pyplot as plt
 
-# Function readCSVFile
-# Params : (String) fileName of the csv file ; (Char) delimiter
-# Return : reader object or None if error
-def readCSVFile(fileName, delimiter):
-	dataList = None
-	try:
-		with open(fileName, mode='r') as csv_file:
-			try:
-				dictionnary = csv.reader(csv_file, delimiter=delimiter)
-				next(dictionnary)
-				dataList = [[int(data[0]), int(data[1])] for data in dictionnary]
-				dataList = sorted(dataList, key=lambda key: key)
-			except Exception:
-				print 'Error in the file'
-	except IOError:
-		print 'The file thetas.csv doesn\'t exist or is not readable.'
-	return dataList
-
-# Function writeThetaFile
-# Params : (foat) list[2]
-# Return : nothing
-def writeThetaFile(theta0, theta1):
-	try:
-		with open('thetas.csv', mode='w+') as csv_file:
-			fieldnames = ['theta0', 'theta1']
-			writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-			writer.writeheader()
-			writer.writerow({fieldnames[0] : theta0, fieldnames[1] : theta1})
-	except Exception:
-		print 'The params must be a float[2].'
-	except IOError:
-		print 'The file thetas.csv isn\'t writable.'
-
-# def displayUI(mileageList, priceList, line):
-# 		plt.plot(mileageList, priceList, 'ro', label='plop')
+# def displayUI(dataList, line):
+# 		plt.plot([data[0] for data in dataList], [data[1] for data in dataList], 'ro')
 # 		plt.plot(line[0], line[1])
 # 		plt.xlabel('mileage')
 # 		plt.ylabel('price')
@@ -59,24 +25,47 @@ def iterateTraining(theta0, theta1, dataList):
 		errorMultipliedByMileageSum += (error * dataList[i][0])
 	newTheta0 = theta0 - (learningRate * (1 / dataSize)) * errorSum
 	newTheta1 = theta1 - (learningRate * (1 / dataSize)) * errorMultipliedByMileageSum
-	print 'theta0 = {} ; theta1 = {}'.format(newTheta0, newTheta1)
 	return [newTheta0, newTheta1]
+
+
+def standardizationOfDataList(dataList):
+	newDataList = []
+	xmin = min(data[0] for data in dataList)
+	xmax = max(data[0] for data in dataList)
+	ymin = min(data[1] for data in dataList)
+	ymax = max(data[1] for data in dataList)
+	for data in dataList:
+		x = standardize(data[0], xmin, xmax)
+		y = standardize(data[1], ymin, ymax)
+		newDataList.append([x, y])
+	return [newDataList, xmin, xmax, ymin, ymax]
+
+def linearRegression(dataList):
+	theta0 = 0.0
+	theta1 = 0.0
+	thetaPres = 0.000001
+	for iteration in range(0,1000000):
+		tmpTheta0, tmpTheta1 = iterateTraining(theta0, theta1, dataList)
+		if (abs(theta0 - tmpTheta0) < thetaPres and abs(theta1 - tmpTheta1) < thetaPres):
+			break;
+		theta0 = tmpTheta0
+		theta1 = tmpTheta1
+	return [theta0, theta1]
 
 # Main
 if len(sys.argv) == 2:
 	dataList = readCSVFile(sys.argv[1], ',')
 	if dataList != None:
 		try:
-			theta0 = 0
-			theta1 = 0
-			for iteration in range(0,100):
-				theta0, theta1 = iterateTraining(theta0, theta1, dataList)
-			# writeThetaFile(theta0, theta1)
-			# dataSize = len(dataList)
-			# line = []
-			# line.append([dataList[0][0], dataList[dataSize-1][0]])
-			# line.append([estimatePrice(dataList[0][0], theta0, theta1), estimatePrice(dataList[dataSize-1][0], theta0, theta1)])
-			# displayUI(mileageList, priceList, line)
+			newDataList, xmin, xmax, ymin, ymax = standardizationOfDataList(dataList)
+			theta0, theta1 = linearRegression(newDataList)
+			infoList = [theta0, theta1, xmin, xmax, ymin, ymax]
+			writeThetaFile(infoList)
+			dataSize = len(dataList)
+			line = []
+			line.append([dataList[0][0], dataList[dataSize-1][0]])
+			line.append([estimateFinalPrice(dataList[0][0], infoList), estimateFinalPrice(dataList[dataSize-1][0], infoList)])
+			# displayUI(dataList, line)
 		except Exception:
 			print 'Error in the file'
 			sys.exit(1)
