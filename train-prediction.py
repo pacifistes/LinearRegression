@@ -4,12 +4,12 @@ from utils import *
 import sys
 import matplotlib.pyplot as plt
 
-# def displayUI(dataList, line):
-# 		plt.plot([data[0] for data in dataList], [data[1] for data in dataList], 'ro')
-# 		plt.plot(line[0], line[1])
-# 		plt.xlabel('mileage')
-# 		plt.ylabel('price')
-# 		plt.show()
+def displayUI(dataList, line):
+		plt.plot([data[0] for data in dataList], [data[1] for data in dataList], 'ro')
+		plt.plot(line[0], line[1])
+		plt.xlabel('mileage')
+		plt.ylabel('price')
+		plt.show()
 
 def estimatePrice(mileage, theta0, theta1):
 	return theta0 + (theta1 * mileage)
@@ -44,7 +44,7 @@ def linearRegression(dataList):
 	theta0 = 0.0
 	theta1 = 0.0
 	thetaPres = 0.000001
-	for iteration in range(0,1000000):
+	for iteration in range(0,100000000):
 		tmpTheta0, tmpTheta1 = iterateTraining(theta0, theta1, dataList)
 		if (abs(theta0 - tmpTheta0) < thetaPres and abs(theta1 - tmpTheta1) < thetaPres):
 			break;
@@ -65,7 +65,7 @@ if len(sys.argv) == 2:
 			line = []
 			line.append([dataList[0][0], dataList[dataSize-1][0]])
 			line.append([estimateFinalPrice(dataList[0][0], infoList), estimateFinalPrice(dataList[dataSize-1][0], infoList)])
-			# displayUI(dataList, line)
+			displayUI(dataList, line)
 		except Exception:
 			print 'Error in the file'
 			sys.exit(1)

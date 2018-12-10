@@ -55,7 +55,7 @@ def estimateFinalPrice(mileage, infoList):
 	price = ((price * (ymax - ymin)) + ymin)
 	if price < 0:
 		price = 0
-	return int(price)
+	return price
 
 # Funtion readThetaFile()
 # Params : None
